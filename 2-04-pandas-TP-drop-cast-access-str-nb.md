@@ -58,6 +58,7 @@ df
 ```{code-cell} ipython3
 # votre code
 df = df.drop(columns=['Unnamed: 0'])
+df = df.drop([88])
 df
 ```
 
@@ -75,7 +76,7 @@ df.info
 
 ```{code-cell} ipython3
 # votre code
-df1=df.dropna(how='all')
+df=df.dropna(axis = 1, how='all')
 df
 ```
 
@@ -86,6 +87,7 @@ df
 
 ```{code-cell} ipython3
 # votre code
+df.loc[88, :]
 ```
 
 7. 1. utilisez l'attribut `dtypes` des dataframes pour voir le type de vos colonnes
@@ -93,6 +95,7 @@ df
 
 ```{code-cell} ipython3
 # votre code
+df['Mass (lb)'].dtypes #dtype est de O
 ```
 
 8. 1. utilisez la méthode `unique` des `Series`pour en regarder le contenu de la colonne des masses
@@ -100,6 +103,7 @@ df
 
 ```{code-cell} ipython3
 # votre code
+df['Mass (lb)'].unique() #il y a des objets supérieurs à une certaine masse car masse précise inconnue
 ```
 
 9. 1. conservez la colonne `'Mass (lb)'` d'origine  
@@ -111,6 +115,11 @@ df
 
 ```{code-cell} ipython3
 # votre code
+df['Mass (lb) orig'] = df['Mass (lb)']
+df['Mass (lb)'] = pd.to_numeric(df['Mass (lb)'], errors = 'coerce')
+df['Mass (lb)'].isna().sum()
+
+#On a 5 valeurs de masses manquantes
 ```
 
 10. 1. cette solution ne vous satisfait pas, vous ne voulez perdre aucune valeur  
@@ -129,6 +138,13 @@ df
 
 ```{code-cell} ipython3
 # votre code
+df['Mass (lb) orig'].astype(str)
+df['Mass (lb) orig']=df['Mass (lb) orig'].str.replace('>' , '')
+df['Mass (lb) orig']=df['Mass (lb) orig'].str.replace('<' , '')
+df['Mass (lb) orig']= df['Mass (lb) orig'].astype(float)
+df
+
+#Je ne savais pas comment mettre des entiers avec une grande base car les int ne pouvaient pas afficher 806 en base 10...
 ```
 
 11. 1. sachant `1 kg = 2.205 lb`  
@@ -137,6 +153,8 @@ df
 
 ```{code-cell} ipython3
 # votre code
+df['Mass (kg)'] = 2.205*df['Mass (lb) orig']
+df
 ```
 
 12. 1. Quels sont les pays qui ont laissé des objets sur la lune ?
@@ -145,6 +163,8 @@ df
 
 ```{code-cell} ipython3
 # votre code
+df['Country'].value_counts()
+df['Country'].value_counts(normalize=True)
 ```
 
 13. 1. quel est le poids total des objets sur la lune en kg ?
@@ -152,6 +172,8 @@ df
 
 ```{code-cell} ipython3
 # votre code
+df['Mass (kg)'].sum()
+df[(df['Country'] == 'United States')]['Mass (kg)'].sum()
 ```
 
 14. 1. quel pays a laissé l'objet le plus léger ?  
@@ -164,6 +186,8 @@ voyez les méthodes `Series.idxmin()` et `Series.argmin()`
 
 ```{code-cell} ipython3
 # votre code
+df['Mass (kg)'].argmin()
+df.loc[[63],['Country']]
 ```
 
 15. 1. y-a-t-il un Memorial sur la lune ?  
@@ -174,6 +198,7 @@ voyez les méthodes `Series.idxmin()` et `Series.argmin()`
 
 ```{code-cell} ipython3
 # votre code
+df[df['Artificial object'].str.contains('Memorial')]['Country'] #il y a un memorial mis par le Luxembourg
 ```
 
 16. 1. faites la liste Python des objets sur la lune  
@@ -181,6 +206,7 @@ voyez les méthodes `Series.idxmin()` et `Series.argmin()`
 
 ```{code-cell} ipython3
 # votre code
+df['Artificial object'].to_list()
 ```
 
 ***
